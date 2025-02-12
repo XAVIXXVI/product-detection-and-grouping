@@ -52,11 +52,11 @@ This project provides a **Product detection and grouping service** using Django 
 2. Navigate to the directory where you want to clone the project.
 3. Run the following command:
    ```sh
-   git clone <your-github-repo-url>
+   git clone git@github.com:XAVIXXVI/product-detection-and-grouping.git
    ```
 4. Change into the project directory:
    ```sh
-   cd <your-project-folder>
+   cd product-detection-and-grouping
    ```
 
 ### **3️⃣ Extract ZIP File (If Applicable)**
