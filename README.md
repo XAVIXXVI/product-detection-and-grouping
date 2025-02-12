@@ -28,9 +28,9 @@ This project is a step toward **AI-powered retail automation** with efficient st
 
 
 
-# **🚀 Face Detection & Grouping Service**
+# **🚀 Product Detection & Grouping Service**
 
-This project provides a **face detection and grouping service** using Django and Docker. It processes uploaded images, detects faces, and groups similar faces using microservices.
+This project provides a **Product detection and grouping service** using Django and Docker. It processes uploaded images, detects products, and groups similar products using microservices.
 
 ---
 
