@@ -1,0 +1,9 @@
+Django>=3.2.4,<3.3
+djangorestframework>=3.12.4,<3.13
+psycopg2>=2.8.6,<2.9
+opencv-python==4.5.5.64
+scikit-learn==1.4.1.post1
+scikit-image==0.22.0
+scikit-fuzzy==0.4.2
+requests
+json-numpy

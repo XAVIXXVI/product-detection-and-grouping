@@ -1,0 +1,114 @@
+version: "3.9"
+networks:
+  consul-network:
+services:
+  consul:
+    image: consul:1.15.4
+    networks:
+      - consul-network
+    ports:
+      - "8500:8500"
+      - "8301:8301"
+  # Consul Template service (for automatic registration)
+  consul-template:
+    image: hashicorp/consul-template:latest
+    command: template -consul="localhost:8500" -template=/consul-template/service.tmpl -destination=- | consul kv put service/
+    volumes:
+      - ./consul.template.tmpl:/consul-template/service.tmpl
+    networks:
+      - consul-network
+
+  main_service:
+    build:
+      context: ./main_service
+    networks:
+      - consul-network
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./main_service/app:/app
+    command: >
+      sh -c "python /reg/register.py &&
+             python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - SERVICE_NAME=main-service
+      - SERVICE_PORT=8000
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASSWORD=changeme
+    depends_on:
+      - db
+      - consul
+
+  detection:
+    build:
+      context: ./detection
+    networks:
+      - consul-network
+    ports:
+      - "8010:8010"
+    volumes:
+      - ./detection/app:/app
+    command: >
+      sh -c "python /reg/register.py &&
+             python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8010"
+    environment:
+      - SERVICE_NAME=detection-service
+      - SERVICE_PORT=8010
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASSWORD=changeme
+    depends_on:
+      - db
+      - consul
+
+  grouping:
+    build:
+      context: ./grouping\
+    networks:
+      - consul-network
+    ports:
+      - "8020:8020"
+    volumes:
+      - ./grouping/app:/app
+    command: >
+      sh -c "python /reg/register.py &&
+             python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8020"
+    environment:
+      - SERVICE_NAME=grouping-service
+      - SERVICE_PORT=8020
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASSWORD=changeme
+    depends_on:
+      - db
+      - consul
+
+  db:
+    image: postgres:13-alpine
+    networks:
+      - consul-network
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=devdb
+      - POSTGRES_USER=devuser
+      - POSTGRES_PASSWORD=changeme
+
+volumes:
+  dev-db-data:

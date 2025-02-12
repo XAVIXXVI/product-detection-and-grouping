@@ -1,0 +1,15 @@
+{{range services := sort .Services}}
+service {{.Name}} {
+  id = "{{.Name}}"
+  name = "{{.Name}}"
+  tags = [{{range .Tags}}{{.}} {{end}}]
+  address = "{{.NetworkSettings.Networks.consul-network.IPAddress}}:{{.Labels.SERVICE_PORT}}"
+  check = {
+    id = "service-{{.Name}}"
+    name = "TCP Check on {{.Name}}"
+    tcp = "{{.NetworkSettings.Networks.consul-network.IPAddress}}:{{.Labels.SERVICE_PORT}}"
+    interval = "10s"
+    timeout = "1s"
+  }
+}
+{{end}}

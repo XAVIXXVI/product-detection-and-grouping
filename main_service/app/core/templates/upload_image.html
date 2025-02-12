@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Image</title>
+</head>
+<body>
+    <h1>Upload Image</h1>
+    <form id="uploadForm">
+        {% csrf_token %}
+        <input type="file" id="imageInput" name="image">
+        <button type="button" onclick="uploadImage()">Upload</button>
+    </form>
+
+    <div id="processedImageContainer" style="display: none;">
+        <h2>Processed Image</h2>
+        <img id="processedImage" src="#" alt="Processed Image">
+        <button type="button" onclick="downloadImage()">Download</button>
+    </div>
+
+    <input type="hidden" id="csrfToken" value="{% csrf_token %}">
+
+    <script>
+        function uploadImage() {
+            var formData = new FormData();
+            var imageFile = document.getElementById('imageInput').files[0];
+
+            if (!imageFile) {
+                alert("Please select an image first.");
+                return;
+            }
+
+            formData.append('image', imageFile);
+
+            var csrfToken = document.getElementById('csrfToken').value;
+
+            fetch("{% url 'image_process' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json()) // Expect JSON response
+            .then(data => {
+                if (data.image) {
+                    var imageSrc = "data:image/jpeg;base64," + data.image;  // Convert Base64 string to valid image URL
+                    document.getElementById('processedImage').src = imageSrc;
+                    document.getElementById('processedImageContainer').style.display = 'block';
+                } else {
+                    console.error('Error: No image received');
+                    alert("Failed to process image.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred while uploading.");
+            });
+        }
+
+        function downloadImage() {
+            var processedImage = document.getElementById('processedImage').src;
+
+            var link = document.createElement('a');
+            link.href = processedImage;
+            link.download = 'processed_image.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

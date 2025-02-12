@@ -1,0 +1,8 @@
+Django>=3.2.4,<3.3
+djangorestframework>=3.12.4,<3.13
+psycopg2>=2.8.6,<2.9
+opencv-python==4.5.5.64
+numpy==1.26.4
+onnxruntime
+requests
+json-numpy

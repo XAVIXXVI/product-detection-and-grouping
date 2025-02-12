@@ -1,0 +1,7 @@
+Django>=3.2.4,<3.3
+djangorestframework>=3.12.4,<3.13
+psycopg2
+requests
+python-consul
+docker
+opencv-python==4.5.5.64
